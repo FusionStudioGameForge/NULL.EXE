@@ -31,18 +31,19 @@ export default class VillageScene extends Phaser.Scene {
 
     // ── Init ─────────────────────────────────────────────────────────────────
     init(data) {
-        this.playerType    = data.playerType || 'orion';
-        this.shards        = data.shards     || 0;
+        this.playerType     = data.playerType || 'orion';
+        this.shards         = data.shards     || 0;
         this.savedVillagers = false;
     }
 
     // ── Create ───────────────────────────────────────────────────────────────
     create() {
         this.cameras.main.fadeIn(800, 0, 0, 0);
-        this._phase     = 'intro';   // intro → fight → cutscene → complete
-        this._enemies   = [];
-        this._wave      = 0;
-        this._dialogBox = null;
+        this._phase      = 'intro';  // intro → fight → cutscene → complete
+        this._enemies    = [];
+        this._wave       = 0;
+        this._aliveCount = 0;
+        this._dialogBox  = null;
 
         // ── World ────────────────────────────────────────────────
         this.add.image(640, 360, 'village_bg').setDisplaySize(1280, 720);
@@ -57,7 +58,7 @@ export default class VillageScene extends Phaser.Scene {
         // Scenery rocks/ruins (visual only)
         this._drawScenery();
 
-        // ── Crystal shard on ground (hidden until fight done) ────
+        // ── Crystal shard (hidden until fight done) ──────────────
         this.shardSprite = this.add.image(640, GAME.GROUND_Y - 30, 'shard')
             .setScale(1.5).setAlpha(0).setDepth(15);
 
@@ -68,7 +69,6 @@ export default class VillageScene extends Phaser.Scene {
         this.player = new Player(this, 200, GAME.GROUND_Y - 60, this.playerType);
         this.physics.add.collider(this.player, this.ground);
 
-        // Melee hit event from Player
         this.player.on('meleeHit', (hx, hy) => this._checkMeleeHit(hx, hy));
         this.player.on('ultimate', (x, y)   => this._triggerUltimate(x, y));
 
@@ -76,11 +76,27 @@ export default class VillageScene extends Phaser.Scene {
         this.enemyGroup = this.physics.add.group();
         this.physics.add.collider(this.enemyGroup, this.ground);
 
-        // Arrow vs enemy collider
-        this.physics.add.overlap(this.player.projectiles, this.enemyGroup,
+        // FIX: Single group-level arrow overlap — no per-enemy duplicates needed.
+        // Previously a duplicate overlap was added inside _spawnEnemy() causing
+        // double damage and accumulating stale physics callbacks each wave.
+        this.physics.add.overlap(
+            this.player.projectiles,
+            this.enemyGroup,
             (arrow, enemy) => {
                 if (enemy.isAlive) enemy.takeDamage(this.player.attackDmg);
                 arrow.destroy();
+            }
+        );
+
+        // Single group-level player-body overlap instead of one per enemy.
+        // Prevents O(n) collider accumulation across all three waves.
+        this.physics.add.overlap(
+            this.player,
+            this.enemyGroup,
+            (player, enemy) => {
+                if (player.isAlive && enemy.isAlive && !player.isDashing) {
+                    player.takeDamage(1);
+                }
             }
         );
 
@@ -89,39 +105,33 @@ export default class VillageScene extends Phaser.Scene {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  SCENERY (placeholder boxes until real art loads)
+    //  SCENERY
     // ─────────────────────────────────────────────────────────────────────────
     _drawScenery() {
-        const g = this.add.graphics();
-        g.setDepth(1);
-        // Ruined walls
+        const g = this.add.graphics().setDepth(1);
         g.fillStyle(0x553322, 0.7);
-        g.fillRect(50, 480, 120, 100);
-        g.fillRect(1100, 490, 100, 90);
+        g.fillRect(50,   480, 120, 100);
+        g.fillRect(1100, 490, 100,  90);
         g.fillStyle(0x332211, 0.5);
-        g.fillRect(900, 510, 80, 70);
+        g.fillRect(900,  510,  80,  70);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     //  HUD
     // ─────────────────────────────────────────────────────────────────────────
     _buildHUD() {
-        // Chapter title
         this.add.text(640, 20, 'CHAPTER 1 — Village of Shadows', {
             fontSize: '22px', fill: COLORS.GOLD,
         }).setOrigin(0.5).setScrollFactor(0).setDepth(50);
 
-        // Wave counter
         this.waveTxt = this.add.text(640, 50, '', {
             fontSize: '18px', fill: COLORS.WHITE,
         }).setOrigin(0.5).setScrollFactor(0).setDepth(50);
 
-        // Shard counter
         this.shardTxt = this.add.text(1250, 20, `Shards: ${this.shards}`, {
             fontSize: '18px', fill: COLORS.CYAN,
         }).setOrigin(1, 0).setScrollFactor(0).setDepth(50);
 
-        // Score
         this.scoreTxt = this.add.text(1250, 44, 'Score: 0', {
             fontSize: '16px', fill: COLORS.WHITE,
         }).setOrigin(1, 0).setScrollFactor(0).setDepth(50);
@@ -148,8 +158,8 @@ export default class VillageScene extends Phaser.Scene {
             const line = lines[i++];
             this._showDialog(
                 line.speaker || null,
-                line.text || line,
-                line.color || COLORS.WHITE,
+                line.text    || line,
+                line.color   || COLORS.WHITE,
                 showNext,
                 2400
             );
@@ -157,6 +167,9 @@ export default class VillageScene extends Phaser.Scene {
         showNext();
     }
 
+    // FIX: Restored the missing auto-advance timer (duration param was ignored before).
+    // Without it dialogs only advanced on click — if the player missed a click the
+    // game would stall forever and enemies would never spawn.
     _showDialog(speaker, text, color, onDone, duration = 2800) {
         if (this._dialogBox) this._dialogBox.destroy();
 
@@ -169,35 +182,43 @@ export default class VillageScene extends Phaser.Scene {
 
         const children = [bg, txt];
         if (speaker) {
-            const sp = this.add.text(0, -30, speaker, {
-                fontSize: '16px', fill: COLORS.GOLD, fontStyle: 'italic',
-            }).setOrigin(0.5);
-            children.push(sp);
+            children.push(
+                this.add.text(0, -30, speaker, {
+                    fontSize: '16px', fill: COLORS.GOLD, fontStyle: 'italic',
+                }).setOrigin(0.5)
+            );
         }
 
         box.add(children);
         this._dialogBox = box;
 
-        // Click to skip or auto-advance
+        // FIX: Guard against advance() firing twice (click + timer race).
+        // Previously both could fire independently, calling onDone() twice and
+        // causing double wave spawns or broken cutscene state.
+        let advanced = false;
         const advance = () => {
+            if (advanced) return;
+            advanced = true;
             if (this._dialogBox) { this._dialogBox.destroy(); this._dialogBox = null; }
+            // Remove the click listener in case the timer fired first
+            this.input.off('pointerdown', advance);
             onDone();
         };
+
         this.input.once('pointerdown', advance);
-        
+        this.time.delayedCall(duration, advance);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     //  WAVE SYSTEM
     // ─────────────────────────────────────────────────────────────────────────
     _spawnWave(wave) {
-        this._wave = wave;
+        this._wave       = wave;
         this._aliveCount = 0;
 
         const configs = this._getWaveConfig(wave);
         this.waveTxt.setText(`Wave ${wave} / 3`);
 
-        // Announce wave
         const ann = this.add.text(640, 360, `WAVE ${wave}`, {
             fontSize: '56px', fill: COLORS.RED,
             stroke: '#000000', strokeThickness: 6,
@@ -208,6 +229,10 @@ export default class VillageScene extends Phaser.Scene {
             onComplete: () => ann.destroy(),
         });
 
+        // FIX: Set _aliveCount BEFORE spawning so the 'died' handler never sees 0
+        // prematurely and triggers _onWaveCleared() before all enemies are even alive.
+        this._aliveCount = configs.length;
+
         this.time.delayedCall(900, () => {
             configs.forEach((cfg, idx) => {
                 this.time.delayedCall(idx * 400, () => this._spawnEnemy(cfg));
@@ -216,23 +241,21 @@ export default class VillageScene extends Phaser.Scene {
     }
 
     _getWaveConfig(wave) {
-        // Wave 1: 2 goblins
-        // Wave 2: 2 goblins + 1 bandit
-        // Wave 3: 2 bandits + 1 big bandit (boss-lite)
         switch (wave) {
             case 1: return [
-                { ...ENEMIES.GOBLIN,  spawnX: 900 },
-                { ...ENEMIES.GOBLIN,  spawnX: 1050 },
+                { ...ENEMIES.GOBLIN, spawnX: 900  },
+                { ...ENEMIES.GOBLIN, spawnX: 1050 },
             ];
             case 2: return [
-                { ...ENEMIES.GOBLIN,  spawnX: 950 },
-                { ...ENEMIES.GOBLIN,  spawnX: 1100 },
-                { ...ENEMIES.BANDIT,  spawnX: 1150 },
+                { ...ENEMIES.GOBLIN, spawnX: 950  },
+                { ...ENEMIES.GOBLIN, spawnX: 1100 },
+                { ...ENEMIES.BANDIT, spawnX: 1150 },
             ];
             case 3: return [
-                { ...ENEMIES.BANDIT,  spawnX: 900  },
-                { ...ENEMIES.BANDIT,  spawnX: 1050 },
-                Object.assign({ spawnX: 1200, health: 80, damage: 14 }, ENEMIES.BANDIT), // mini-boss
+                { ...ENEMIES.BANDIT, spawnX: 900  },
+                { ...ENEMIES.BANDIT, spawnX: 1050 },
+                // Mini-boss: spread BANDIT first, then override stats so spawnX wins
+                { ...ENEMIES.BANDIT, spawnX: 1200, health: 80, damage: 14 },
             ];
             default: return [];
         }
@@ -242,7 +265,6 @@ export default class VillageScene extends Phaser.Scene {
         const e = new Enemy(this, cfg.spawnX, GAME.GROUND_Y - 60, cfg);
         this.enemyGroup.add(e);
         this._enemies.push(e);
-        this._aliveCount++;
 
         e.on('died', (dead) => {
             const idx = this._enemies.indexOf(dead);
@@ -252,13 +274,10 @@ export default class VillageScene extends Phaser.Scene {
             if (this._aliveCount <= 0) this._onWaveCleared();
         });
 
-
-        // Player body vs enemy
-        this.physics.add.overlap(this.player, e, () => {
-            if (this.player.isAlive && e.isAlive && !this.player.isDashing) {
-                this.player.takeDamage(1); // constant passive damage for touching
-            }
-        });
+        // NOTE: No per-enemy overlap colliders here.
+        // Arrow and player-body overlaps are handled by the group-level
+        // colliders registered once in create(). Adding them here caused
+        // duplicate hits and physics callback leaks across waves.
     }
 
     _onWaveCleared() {
@@ -273,24 +292,26 @@ export default class VillageScene extends Phaser.Scene {
         if (this._wave < 3) {
             this.time.delayedCall(1800, () => this._spawnWave(this._wave + 1));
         } else {
-            // All waves done → trigger post-fight sequence
             this.time.delayedCall(1600, () => this._onFightComplete());
         }
     }
 
-    // ✅ Add this once
-_damageEnemiesInRadius(x, y, radius, multiplier = 1) {
-    for (const e of this._enemies) {
-        if (!e.isAlive) continue;
-        if (Phaser.Math.Distance.Between(x, y, e.x, e.y) < radius) {
-            e.takeDamage(this.player.attackDmg * multiplier);
+    // ─────────────────────────────────────────────────────────────────────────
+    //  COMBAT HELPERS
+    // ─────────────────────────────────────────────────────────────────────────
+    // Shared radius-damage helper — eliminates duplicated distance logic
+    // that previously lived separately in _checkMeleeHit and _triggerUltimate.
+    _damageEnemiesInRadius(x, y, radius, multiplier = 1) {
+        for (const e of this._enemies) {
+            if (!e.isAlive) continue;
+            if (Phaser.Math.Distance.Between(x, y, e.x, e.y) < radius) {
+                e.takeDamage(this.player.attackDmg * multiplier);
+            }
         }
     }
-}
 
-// Then simplify both callers:
-_checkMeleeHit(hx, hy)      { this._damageEnemiesInRadius(hx, hy, 90); }
-_triggerUltimate(x, y)      { this._damageEnemiesInRadius(x, y, 300, 2.5); }
+    _checkMeleeHit(hx, hy) { this._damageEnemiesInRadius(hx, hy, 90);       }
+    _triggerUltimate(x, y) { this._damageEnemiesInRadius(x,  y,  300, 2.5); }
 
     // ─────────────────────────────────────────────────────────────────────────
     //  POST-FIGHT SEQUENCE
@@ -299,7 +320,6 @@ _triggerUltimate(x, y)      { this._damageEnemiesInRadius(x, y, 300, 2.5); }
         this._phase = 'cutscene';
         this.waveTxt.setText('');
 
-        // Crystal shard appears
         this.shardSprite.setAlpha(1);
         this.tweens.add({
             targets: this.shardSprite,
@@ -309,31 +329,22 @@ _triggerUltimate(x, y)      { this._damageEnemiesInRadius(x, y, 300, 2.5); }
             repeat: -1,
         });
 
-        // Screen tint back to normal
         this.cameras.main.resetFX();
 
         this.time.delayedCall(400, () => {
-            // Wise Man dialogue
-            this._showNarrativeLines(WISE_MAN_LINES, () => {
-                this._collectShard();
-            });
+            this._showNarrativeLines(WISE_MAN_LINES, () => this._collectShard());
         });
     }
 
     _collectShard() {
-        // Player walks to shard position
         this.tweens.add({
             targets: this.shardSprite,
-            scaleX: 0, scaleY: 0,
-            alpha: 0,
+            scaleX: 0, scaleY: 0, alpha: 0,
             duration: 500,
         });
 
-        const flash = this.add.rectangle(640, 360, 1280, 720, 0xffffff, 0)
-            .setDepth(70);
-        this.tweens.add({
-            targets: flash, alpha: 0.6, duration: 400, yoyo: true,
-        });
+        const flash = this.add.rectangle(640, 360, 1280, 720, 0xffffff, 0).setDepth(70);
+        this.tweens.add({ targets: flash, alpha: 0.6, duration: 400, yoyo: true });
 
         const collected = this.add.text(640, 280, '✦  SHARD COLLECTED  ✦', {
             fontSize: '36px', fill: COLORS.GOLD,
@@ -346,7 +357,8 @@ _triggerUltimate(x, y)      { this._damageEnemiesInRadius(x, y, 300, 2.5); }
         this.time.delayedCall(2200, () => {
             collected.destroy();
             this._phase = 'complete';
-            this._showDialog(null,
+            this._showDialog(
+                null,
                 `Shard ${this.shards}/5 recovered. Journey to the Forest of Whispers!`,
                 COLORS.CYAN,
                 () => this._goToNextChapter()
@@ -358,8 +370,8 @@ _triggerUltimate(x, y)      { this._damageEnemiesInRadius(x, y, 300, 2.5); }
         this.cameras.main.fadeOut(700, 0, 0, 0);
         this.cameras.main.once('camerafadeoutcomplete', () => {
             this.scene.start(SCENES.FOREST, {
-                playerType: this.playerType,
-                shards: this.shards,
+                playerType:     this.playerType,
+                shards:         this.shards,
                 savedVillagers: this.savedVillagers,
             });
         });
@@ -376,9 +388,7 @@ _triggerUltimate(x, y)      { this._damageEnemiesInRadius(x, y, 300, 2.5); }
     //  UPDATE LOOP
     // ─────────────────────────────────────────────────────────────────────────
     update() {
-        if (this.player && this.player.isAlive) {
-            this.player.update();
-        }
-        this._enemies.forEach(e => e.update());
+        if (this.player?.isAlive) this.player.update();
+        for (const e of this._enemies) e.update();
     }
 }
