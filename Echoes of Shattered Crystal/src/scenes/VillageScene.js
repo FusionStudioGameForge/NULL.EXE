@@ -9,6 +9,7 @@ import { SCENES, ENEMIES, COLORS, GAME } from '../utils/constants.js';
 import Player from '../classes/Player.js';
 import Enemy  from '../classes/Enemy.js';
 
+
 // ── Narrative sequences ───────────────────────────────────────────────────────
 const INTRO_LINES = [
     { text: 'The sacred crystal… it shatters!',               color: COLORS.GOLD   },
