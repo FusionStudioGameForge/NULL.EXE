@@ -42,11 +42,11 @@ export default class BootScene extends Phaser.Scene {
 
         // ── Enemy sprite sheets ───────────────────────
 
-        this.load.spritesheet('goblin','assets/images/characters/goblin.png',       { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('goblin','assets/images/characters/goblinsword.png',       { frameWidth: 64, frameHeight: 64 });
 
 
         // ── Projectiles & effects ─────────────────────
-        this.load.image('projectile',       'assets/images/characters/projectile.png');
+        this.load.image('projectile','assets/images/characters/projectile.png');
 
 
         // ── UI ────────────────────────────────────────
