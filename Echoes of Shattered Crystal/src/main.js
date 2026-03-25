@@ -1,32 +1,32 @@
-// main.js
+// src/main.js
 // =============================================
-// MAIN ENTRY POINT OF THE GAME
-// Sets up Phaser configuration and registers all scenes
+// Phaser 3 game configuration and boot
 // =============================================
 
-import BootScene from './scenes/BootScene.js';
-import MenuScene from './scenes/MenuScene.js';
+import BootScene            from './scenes/BootScene.js';
+import MenuScene            from './scenes/MenuScene.js';
 import CharacterSelectScene from './scenes/CharacterSelectScene.js';
-import VillageScene from './scenes/VillageScene.js';
-import ForestScene from './scenes/ForestScene.js';
-import GraveyardScene from './scenes/GraveyardScene.js';
-import VolcanoScene from './scenes/VolcanoScene.js';
-import MountainScene from './scenes/MountainScene.js';
-
-import { SCENES } from './utils/constants.js';
+import VillageScene         from './scenes/VillageScene.js';
+import ForestScene          from './scenes/ForestScene.js';
+import GraveyardScene       from './scenes/GraveyardScene.js';
+import VolcanoScene         from './scenes/VolcanoScene.js';
+import MountainScene        from './scenes/MountainScene.js';
+import VictoryScene, { GameOverScene } from './scenes/VictoryScene.js';
 
 const config = {
     type: Phaser.AUTO,
-    width: 1280,
+    width:  1280,
     height: 720,
-    backgroundColor: '#0a0a1f',
+    backgroundColor: '#0a0a1a',
+
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 800 },
-            debug: false
-        }
+            gravity: { y: 600 },
+            debug: false,   // set true to see hitboxes during development
+        },
     },
+
     scene: [
         BootScene,
         MenuScene,
@@ -35,8 +35,12 @@ const config = {
         ForestScene,
         GraveyardScene,
         VolcanoScene,
-        MountainScene
-    ]
+        MountainScene,
+        VictoryScene,
+        GameOverScene,
+    ],
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+export default game;
