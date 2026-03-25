@@ -1,4 +1,8 @@
 // src/scenes/MountainScene.js
+// Chapter 5: The Final Mountain
+// Final boss + twist ending choice
+// =============================================
+
 import { SCENES } from '../utils/constants.js';
 
 export default class MountainScene extends Phaser.Scene {
@@ -8,38 +12,40 @@ export default class MountainScene extends Phaser.Scene {
 
     init(data) {
         this.playerType = data.playerType;
-        this.shards = data.shards || 4;
-        this.abilities = data.abilities || [];
+        this.shardsCollected = data.shardsCollected || 4;
         this.savedVillagers = data.savedVillagers || false;
     }
 
     create() {
-        this.add.text(640, 60, 'Chapter 5 - The Final Mountain', { fontSize: '36px' }).setOrigin(0.5);
-        this.add.text(640, 220, 'Defeat the Dragon!\n(Press SPACE to simulate victory)', {
-            fontSize: '26px', fill: '#f00', align: 'center'
+        this.add.text(640, 60, 'CHAPTER 5 - The Final Mountain', { fontSize: '36px' }).setOrigin(0.5);
+        this.add.text(640, 220, 'The Dragon awaits...\nPress SPACE to simulate final battle', {
+            fontSize: '26px',
+            fill: '#ff0000',
+            align: 'center'
         }).setOrigin(0.5);
 
         this.input.keyboard.once('keydown-SPACE', () => this.showEndingChoice());
     }
 
     showEndingChoice() {
-        const good = this.add.text(400, 420, 'RESTORE PEACE\n(Sacrifice powers)', {
-            fontSize: '30px', fill: '#0ff', align: 'center'
+        const goodBtn = this.add.text(400, 420, 'RESTORE PEACE\n(Sacrifice your powers)', {
+            fontSize: '28px', fill: '#00ffff', align: 'center'
         }).setOrigin(0.5).setInteractive();
 
-        const bad = this.add.text(880, 420, 'KEEP THE POWER\n(Rule the land)', {
-            fontSize: '30px', fill: '#f0f', align: 'center'
+        const badBtn = this.add.text(880, 420, 'KEEP THE POWER\n(Became the new ruler)', {
+            fontSize: '28px', fill: '#ff00ff', align: 'center'
         }).setOrigin(0.5).setInteractive();
 
-        good.on('pointerdown', () => this.endGame('good'));
-        bad.on('pointerdown', () => this.endGame('bad'));
+        goodBtn.on('pointerdown', () => this.showEnding('good'));
+        badBtn.on('pointerdown', () => this.showEnding('bad'));
     }
 
-    endGame(type) {
-        alert(type === 'good' 
-            ? 'Peace is restored! The land is saved.' 
-            : 'You became the new dark ruler...');
-        
+    showEnding(type) {
+        const message = type === 'good' 
+            ? 'Peace is restored!\nThe land is saved.' 
+            : 'You absorbed the crystal...\nYou are the new dark ruler.';
+
+        alert(message);   // Simple ending for hackathon demo
         this.scene.start(SCENES.MENU);
     }
 }
