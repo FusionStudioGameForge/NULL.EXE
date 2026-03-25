@@ -19,8 +19,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.scoreVal = config.score;
         this.isAlive  = true;
 
-        this.add.image(x, y, 'goblin');
-        this.add.sprite(x, y, 'goblin');
+
+        this.load.image(x, y, 'goblin','assets/images/characters/goblin.png',{ frameWidth: 64, frameHeight: 64 });
+        this.load.sprite(x, y, 'goblin','assets/images/characters/goblin.png',{ frameWidth: 64, frameHeight: 64 });
+
         
         scene.add.existing(this);
         scene.physics.add.existing(this);

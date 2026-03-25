@@ -287,7 +287,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // ─────────────────────────────────────────────────
     useUltimate() {
         if (!this.hasUltimate || !this.canUltimate || !this.isAlive) return;
-        this.canUltimate = false;
+        this.canUltimate = true;
 
         // Screen flash
         this.scene.cameras.main.flash(300, 200, 100, 255);
