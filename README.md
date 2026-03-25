@@ -42,8 +42,10 @@ Strategic combat tailored to character style and environment.
 Development Team & Roles:
 
 Vaughan: Project Management, Documentation and Testing
- Victor: Assets, Visuals and Testing
- Teboho: Game Logic & Backend  
+
+Victor: Assets, Visuals and Testing
+
+Teboho: Game Logic & Backend  
 Rumbi: UI & Front-End Visuals  
 Rene: Assests and Shadowing
 
