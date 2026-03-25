@@ -18,12 +18,7 @@ const INTRO_LINES = [
     { text: 'Defend the village!',                             color: COLORS.WHITE  },
 ];
 
-const WISE_MAN_LINES = [
-    { speaker: 'Wise Man', text: '"The crystal\'s power has been split into five shards…"' },
-    { speaker: 'Wise Man', text: '"Each shard lies in a cursed land, guarded by darkness."' },
-    { speaker: 'Wise Man', text: '"Seek them across the cursed lands…"' },
-    { speaker: 'Wise Man', text: '"Only then can balance be restored."' },
-];
+
 
 export default class VillageScene extends Phaser.Scene {
     constructor() {
@@ -52,7 +47,7 @@ export default class VillageScene extends Phaser.Scene {
         // Ground platform
         this.ground = this.physics.add.staticGroup();
         const g = this.ground.create(640, GAME.GROUND_Y + 20, null);
-        g.setVisible(false);
+        g.setVisible(true);
         g.setSize(1280, 40);
         g.refreshBody();
 

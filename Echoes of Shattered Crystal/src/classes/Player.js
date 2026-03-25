@@ -107,10 +107,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.attackKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
         this.shieldKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
         this.dashKey   = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
-        this.ultKey    = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
+        
 
         this.attackKey.on('down', () => this.attack());
-        this.ultKey.on('down',    () => this.useUltimate());
+        
     }
 
     // ─────────────────────────────────────────────────
