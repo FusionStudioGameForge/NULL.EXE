@@ -50,9 +50,8 @@ export default class BootScene extends Phaser.Scene {
 
 
         // ── UI ────────────────────────────────────────
-        this.load.image('health_bar_bg', 'assets/images/ui/health_bar_bg.png');
-        this.load.image('health_bar_fg', 'assets/images/ui/health_bar_fg.png');
-        this.load.image('powerup',  'assets/images/ui/powerup.jpeg');
+
+        this.load.image('powerup',  'assets/images/characters/powerup.jpeg');
 
         // ── Audio ─────────────────────────────────────
         this.load.audio('hit_sword',  'assets/audio/mixkit-dagger-woosh-1487.wav');

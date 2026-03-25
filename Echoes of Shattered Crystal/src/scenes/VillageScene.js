@@ -30,6 +30,7 @@ export default class VillageScene extends Phaser.Scene {
         this.playerType     = data.playerType || 'orion';
         this.shards         = data.shards     || 0;
         this.savedVillagers = false;
+        
     }
 
     // ── Create ───────────────────────────────────────────────────────────────

@@ -74,7 +74,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             frameRate: 8, repeat: -1,
         });
         safe(`${k}_walk`, {
-            frames: this.scene.anims.generateFrameNumbers(k, { start: 4, end: 9 }),
+            frames: this.scene.anims.generateFrameNumbers(k, { start: 4, end: 19 }),
             frameRate: 12, repeat: -1,
         });
         safe(`${k}_jump`, {
