@@ -51,7 +51,7 @@ Rene: Assests and Shadowing
 
 Tools & Technologies: 
 
-Game Engine & Tools: Phaser.js, PlayCanva, itch.io
+Game Engine & Tools: Phaser.js, PlayCanva
 Design & Assets: Custom assets, templates from Phaser.js, World & character kits from Itch.io  
 Version Control: GitHub Repository at https://github.com/Vaughan-Keannan/FusionStudio_Hackathon
 
