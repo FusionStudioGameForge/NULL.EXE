@@ -1,6 +1,7 @@
 # NULL.EXE
 
-Echoes of Shattered Crystal
+Echoes of Shattered Crystal:
+
 Welcome to the development repository for Echoes of Shattered Crystal, an immersive story-driven action-adventure game built with Phaser.js and PlayCanva. This project aims to deliver a captivating gameplay experience through high-quality visuals, smooth mechanics, and engaging narrative elements.
 
 
