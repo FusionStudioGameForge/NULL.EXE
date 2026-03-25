@@ -1,8 +1,4 @@
-// src/scenes/MountainScene.js
-// Chapter 5: The Final Mountain
-// Final boss + twist ending choice
-// =============================================
-
+// src/scenes/MountainScene.js - Chapter 5 Final
 import { SCENES } from '../utils/constants.js';
 
 export default class MountainScene extends Phaser.Scene {
@@ -12,15 +8,20 @@ export default class MountainScene extends Phaser.Scene {
 
     init(data) {
         this.playerType = data.playerType;
-        this.shardsCollected = data.shardsCollected || 4;
-        this.savedVillagers = data.savedVillagers || false;
+        this.shards = data.shards || 4;
     }
 
     create() {
-        this.add.text(640, 60, 'CHAPTER 5 - The Final Mountain', { fontSize: '36px' }).setOrigin(0.5);
-        this.add.text(640, 220, 'The Dragon awaits...\nPress SPACE to simulate final battle', {
+        this.add.image(640, 360, 'mountain_bg').setScale(1.1);
+
+        this.add.text(640, 60, 'CHAPTER 5 - The Final Mountain', {
+            fontSize: '36px',
+            fill: '#ff4444'
+        }).setOrigin(0.5);
+
+        this.add.text(640, 250, 'Defeat the Dragon!\nPress SPACE to simulate victory', {
             fontSize: '26px',
-            fill: '#ff0000',
+            fill: '#ffffff',
             align: 'center'
         }).setOrigin(0.5);
 
@@ -28,12 +29,12 @@ export default class MountainScene extends Phaser.Scene {
     }
 
     showEndingChoice() {
-        const goodBtn = this.add.text(400, 420, 'RESTORE PEACE\n(Sacrifice your powers)', {
-            fontSize: '28px', fill: '#00ffff', align: 'center'
+        const goodBtn = this.add.text(400, 420, 'RESTORE PEACE', {
+            fontSize: '32px', fill: '#00ffff'
         }).setOrigin(0.5).setInteractive();
 
-        const badBtn = this.add.text(880, 420, 'KEEP THE POWER\n(Became the new ruler)', {
-            fontSize: '28px', fill: '#ff00ff', align: 'center'
+        const badBtn = this.add.text(880, 420, 'KEEP THE POWER', {
+            fontSize: '32px', fill: '#ff00ff'
         }).setOrigin(0.5).setInteractive();
 
         goodBtn.on('pointerdown', () => this.showEnding('good'));
@@ -43,9 +44,9 @@ export default class MountainScene extends Phaser.Scene {
     showEnding(type) {
         const message = type === 'good' 
             ? 'Peace is restored!\nThe land is saved.' 
-            : 'You absorbed the crystal...\nYou are the new dark ruler.';
+            : 'You absorbed the crystal...\nYou are now the new dark ruler.';
 
-        alert(message);   // Simple ending for hackathon demo
+        alert(message);
         this.scene.start(SCENES.MENU);
     }
 }

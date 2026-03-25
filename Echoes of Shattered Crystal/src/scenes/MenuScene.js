@@ -1,7 +1,6 @@
 // src/scenes/MenuScene.js
 // =============================================
-// Title screen / Main Menu
-// Shows game title and lets player start the journey
+// Title / Main Menu Screen
 // =============================================
 
 import { SCENES } from '../utils/constants.js';
@@ -12,23 +11,20 @@ export default class MenuScene extends Phaser.Scene {
     }
 
     create() {
-        this.cameras.main.setBackgroundColor('#1a1a2e');
+        this.cameras.main.setBackgroundColor('#0a0a1f');
 
-        // Game Title
         this.add.text(640, 180, 'ECHOES OF THE SHATTERED CRYSTAL', {
             fontSize: '52px',
-            fontStyle: 'bold',
-            fill: '#ffffff'
+            fill: '#ffffff',
+            fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        // Subtitle / Story hint
-        this.add.text(640, 260, 'A tale of shards, monsters, and destiny', {
+        this.add.text(640, 260, 'A Hackathon Project', {
             fontSize: '24px',
             fill: '#aaaaaa'
         }).setOrigin(0.5);
 
-        // Start Button
-        const startBtn = this.add.text(640, 420, 'BEGIN YOUR JOURNEY', {
+        const startBtn = this.add.text(640, 420, 'START JOURNEY', {
             fontSize: '42px',
             fill: '#00ff88'
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -36,11 +32,5 @@ export default class MenuScene extends Phaser.Scene {
         startBtn.on('pointerdown', () => {
             this.scene.start(SCENES.CHARACTER_SELECT);
         });
-
-        // Hackathon note
-        this.add.text(640, 620, 'Hackathon Demo - Press F12 for console logs', {
-            fontSize: '18px',
-            fill: '#666666'
-        }).setOrigin(0.5);
     }
 }

@@ -1,7 +1,4 @@
-// src/scenes/VolcanoScene.js
-// Chapter 4: Volcano of Flames
-// =============================================
-
+// src/scenes/VolcanoScene.js - Chapter 4
 import { SCENES } from '../utils/constants.js';
 
 export default class VolcanoScene extends Phaser.Scene {
@@ -11,24 +8,24 @@ export default class VolcanoScene extends Phaser.Scene {
 
     init(data) {
         this.playerType = data.playerType;
-        this.shardsCollected = data.shardsCollected || 3;
-        this.savedVillagers = data.savedVillagers || false;
+        this.shards = data.shards || 3;
     }
 
     create() {
-        this.add.text(640, 60, 'CHAPTER 4 - Volcano of Flames', { fontSize: '36px' }).setOrigin(0.5);
+        this.add.image(640, 360, 'volcano_bg').setScale(1.1);
 
-        this.add.text(640, 300, 'Dash ability unlocked!\nPress SPACE to continue', {
-            fontSize: '26px',
+        this.add.text(640, 60, 'CHAPTER 4 - Volcano of Flames', {
+            fontSize: '36px',
             fill: '#ff8800'
         }).setOrigin(0.5);
 
+        this.add.text(640, 320, 'Dash ability unlocked!\nPress SPACE to continue', {
+            fontSize: '26px',
+            fill: '#ffffff'
+        }).setOrigin(0.5);
+
         this.input.keyboard.once('keydown-SPACE', () => {
-            this.scene.start(SCENES.MOUNTAIN, {
-                playerType: this.playerType,
-                shardsCollected: this.shardsCollected + 1,
-                savedVillagers: this.savedVillagers
-            });
+            this.scene.start(SCENES.MOUNTAIN, { playerType: this.playerType, shards: this.shards + 1 });
         });
     }
 }

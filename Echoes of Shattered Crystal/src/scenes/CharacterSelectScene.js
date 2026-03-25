@@ -1,10 +1,10 @@
 // src/scenes/CharacterSelectScene.js
 // =============================================
-// Player chooses between Aria (Archer) or Orion (Swordsman)
-// This choice is passed to all future levels
+// Player chooses Aria or Orion
+// Choice is passed to all levels
 // =============================================
 
-import { SCENES, PLAYER } from '../utils/constants.js';
+import { SCENES } from '../utils/constants.js';
 
 export default class CharacterSelectScene extends Phaser.Scene {
     constructor() {
@@ -17,28 +17,28 @@ export default class CharacterSelectScene extends Phaser.Scene {
             fill: '#ffffff'
         }).setOrigin(0.5);
 
-        // Aria Option
+        // Aria - Archer
         this.add.text(400, 250, 'ARIA\nThe Skilled Archer', {
             fontSize: '32px',
             fill: '#00ffff',
             align: 'center'
         }).setOrigin(0.5);
 
-        const ariaBtn = this.add.rectangle(400, 380, 200, 240, 0x00ffff, 0.2).setInteractive();
+        const ariaBtn = this.add.rectangle(400, 380, 200, 200, 0x00ffff, 0.2).setInteractive();
         ariaBtn.on('pointerdown', () => {
-            this.scene.start(SCENES.VILLAGE, { playerType: PLAYER.ARIA });
+            this.scene.start(SCENES.VILLAGE, { playerType: 'aria' });
         });
 
-        // Orion Option
+        // Orion - Swordsman
         this.add.text(880, 250, 'ORION\nThe Brave Swordsman', {
             fontSize: '32px',
             fill: '#ff8800',
             align: 'center'
         }).setOrigin(0.5);
 
-        const orionBtn = this.add.rectangle(880, 380, 200, 240, 0xff8800, 0.2).setInteractive();
+        const orionBtn = this.add.rectangle(880, 380, 200, 200, 0xff8800, 0.2).setInteractive();
         orionBtn.on('pointerdown', () => {
-            this.scene.start(SCENES.VILLAGE, { playerType: PLAYER.ORION });
+            this.scene.start(SCENES.VILLAGE, { playerType: 'orion' });
         });
     }
 }

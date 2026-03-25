@@ -1,7 +1,7 @@
 // src/scenes/BootScene.js
 // =============================================
-// First scene that runs when the game starts.
-// Used to load all assets (images, sounds, tilemaps) before showing the menu.
+// First scene that runs
+// Loads all background images (and will load more assets later)
 // =============================================
 
 import { SCENES } from '../utils/constants.js';
@@ -12,19 +12,20 @@ export default class BootScene extends Phaser.Scene {
     }
 
     preload() {
-        console.log('BootScene: Preloading assets...');
+        console.log('BootScene: Loading background images...');
 
-        // TODO: Add your real assets here when you download them
-        // Example:
-        // this.load.image('village_bg', 'assets/images/backgrounds/village.png');
-        // this.load.spritesheet('aria', 'assets/spritesheets/aria.png', { frameWidth: 64, frameHeight: 64 });
-        // this.load.audio('sword_swing', 'assets/audio/sfx/sword_swing.mp3');
+        // Load the 5 background images you provided
+        this.load.image('village_bg',   'assets/images/backgrounds/village_bg.png');
+        this.load.image('forest_bg',    'assets/images/backgrounds/forest_bg.png');
+        this.load.image('graveyard_bg', 'assets/images/backgrounds/graveyard_bg.png');
+        this.load.image('volcano_bg',   'assets/images/backgrounds/volcano_bg.png');
+        this.load.image('mountain_bg',  'assets/images/backgrounds/mountain_bg.png');
 
-        console.log('BootScene: Preload complete');
+        console.log('BootScene: All backgrounds loaded');
     }
 
     create() {
-        console.log('BootScene: Starting Menu Scene');
+        console.log('BootScene finished → Starting Menu');
         this.scene.start(SCENES.MENU);
     }
 }
