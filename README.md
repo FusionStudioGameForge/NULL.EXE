@@ -33,7 +33,7 @@ The Final Mountain: Confront the dragon, utilize all abilities, and make the ult
 
 Gameplay Mechanics:  
 
-Choice-driven narrative with multiple endings.  
+Storyline adventure following different chapters, each with unique scenarios 
 Progressive unlocking of abilities: shield, dash, and ultimate attacks.  
 Strategic combat tailored to character style and environment.
 
@@ -42,9 +42,7 @@ Strategic combat tailored to character style and environment.
 Development Team & Roles:
 
 Vaughan: Project Management, Documentation and Testing
-
 Victor: Assets, Visuals and Testing
-
 Teboho: Game Logic & Backend  
 Rumbi: UI & Front-End Visuals  
 Rene: Assests and Shadowing
