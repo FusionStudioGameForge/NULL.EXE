@@ -12,7 +12,7 @@ export default class VolcanoScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(640, 360, 'volcano_bg').setScale(1.1);
+        this.add.image(640, 360, 'volcanoe_bg').setScale(1.1);
 
         this.add.text(640, 60, 'CHAPTER 4 - Volcano of Flames', {
             fontSize: '36px',

@@ -18,7 +18,7 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('village_bg',   'assets/images/backgrounds/village_bg.png');
         this.load.image('forest_bg',    'assets/images/backgrounds/forest_bg.png');
         this.load.image('graveyard_bg', 'assets/images/backgrounds/graveyard_bg.png');
-        this.load.image('volcano_bg',   'assets/images/backgrounds/volcano_bg.png');
+        this.load.image('volcanoe_bg',   'assets/images/backgrounds/volcanoe_bg.png');
         this.load.image('mountain_bg',  'assets/images/backgrounds/mountain_bg.png');
 
         console.log('BootScene: All backgrounds loaded');
