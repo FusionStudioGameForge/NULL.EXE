@@ -31,11 +31,15 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('village_bg',   'assets/images/backgrounds/village_bg.png');
         this.load.image('forest_bg',    'assets/images/backgrounds/forest_bg.png');
         this.load.image('graveyard_bg', 'assets/images/backgrounds/graveyard_bg.png');
-<<<<<<< HEAD
+ HEAD
+HEAD
         this.load.image('volcanoe_bg',  'assets/images/backgrounds/volcanoe_bg.png');
-=======
+
         this.load.image('volcanoe_bg',   'assets/images/backgrounds/volcanoe_bg.png');
->>>>>>> fc6c5c897ee1617ee9a698e927be5862825f3a4c
+ fc6c5c897ee1617ee9a698e927be5862825f3a4c
+
+        this.load.image('volcanoe_bg',   'assets/images/backgrounds/volcanoe_bg.png');
+ fc6c5c897ee1617ee9a698e927be5862825f3a4c
         this.load.image('mountain_bg',  'assets/images/backgrounds/mountain_bg.png');
         this.load.image('menu_bg',      'assets/images/backgrounds/menu_bg.png');
 

@@ -29,15 +29,19 @@ export default class VolcanoScene extends Phaser.Scene {
     }
 
     create() {
-<<<<<<< HEAD
+ HEAD
+ HEAD
         this.cameras.main.fadeIn(800, 0, 0, 0);
         this._phase      = 'intro';
         this._enemies    = [];
         this._aliveCount = 0;
         this._bossSpawned = false;
-=======
+
         this.add.image(640, 360, 'volcanoe_bg').setScale(1.1);
->>>>>>> fc6c5c897ee1617ee9a698e927be5862825f3a4c
+ fc6c5c897ee1617ee9a698e927be5862825f3a4c
+
+        this.add.image(640, 360, 'volcanoe_bg').setScale(1.1);
+ fc6c5c897ee1617ee9a698e927be5862825f3a4c
 
         // ── World ────────────────────────────────────────────────
         this.add.image(640, 360, 'volcanoe_bg').setDisplaySize(1280, 720);
