@@ -60,7 +60,6 @@ export default class VillageScene extends Phaser.Scene {
         // ── Crystal shard on ground (hidden until fight done) ────
         this.shardSprite = this.add.image(640, GAME.GROUND_Y - 30, 'shard')
             .setScale(1.5).setAlpha(0).setDepth(15);
-        this.tweens.add({ targets: this.shardSprite, alpha: 0, duration: 0 }); // start hidden
 
         // ── HUD ──────────────────────────────────────────────────
         this._buildHUD();
@@ -182,13 +181,10 @@ export default class VillageScene extends Phaser.Scene {
         // Click to skip or auto-advance
         const advance = () => {
             if (this._dialogBox) { this._dialogBox.destroy(); this._dialogBox = null; }
-            this.input.off('pointerdown', advance);
             onDone();
         };
         this.input.once('pointerdown', advance);
-        this.time.delayedCall(duration, () => {
-            if (this._dialogBox === box) advance();
-        });
+        
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -236,7 +232,7 @@ export default class VillageScene extends Phaser.Scene {
             case 3: return [
                 { ...ENEMIES.BANDIT,  spawnX: 900  },
                 { ...ENEMIES.BANDIT,  spawnX: 1050 },
-                { ...ENEMIES.BANDIT,  spawnX: 1200, health: 80, damage: 14 }, // mini-boss
+                Object.assign({ spawnX: 1200, health: 80, damage: 14 }, ENEMIES.BANDIT), // mini-boss
             ];
             default: return [];
         }
@@ -249,18 +245,13 @@ export default class VillageScene extends Phaser.Scene {
         this._aliveCount++;
 
         e.on('died', (dead) => {
-            this._enemies = this._enemies.filter(x => x !== dead);
+            const idx = this._enemies.indexOf(dead);
+            if (idx !== -1) this._enemies.splice(idx, 1);
             this._aliveCount--;
             this._updateScore();
             if (this._aliveCount <= 0) this._onWaveCleared();
         });
 
-        // Arrow vs this enemy
-        this.physics.add.overlap(this.player.projectiles, e,
-            (arrow, enemy) => {
-                if (enemy.isAlive) { enemy.takeDamage(this.player.attackDmg); arrow.destroy(); }
-            }
-        );
 
         // Player body vs enemy
         this.physics.add.overlap(this.player, e, () => {
@@ -287,34 +278,19 @@ export default class VillageScene extends Phaser.Scene {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  MELEE HIT CHECK
-    // ─────────────────────────────────────────────────────────────────────────
-    _checkMeleeHit(hx, hy) {
-        this._enemies.forEach(e => {
-            if (!e.isAlive) return;
-            const dist = Phaser.Math.Distance.Between(hx, hy, e.x, e.y);
-            if (dist < 90) e.takeDamage(this.player.attackDmg);
-        });
+    // ✅ Add this once
+_damageEnemiesInRadius(x, y, radius, multiplier = 1) {
+    for (const e of this._enemies) {
+        if (!e.isAlive) continue;
+        if (Phaser.Math.Distance.Between(x, y, e.x, e.y) < radius) {
+            e.takeDamage(this.player.attackDmg * multiplier);
+        }
     }
+}
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  ULTIMATE SHOCKWAVE
-    // ─────────────────────────────────────────────────────────────────────────
-    _triggerUltimate(x, y) {
-        // Visual ring
-        const ring = this.add.circle(x, y, 10, 0x8844ff, 0.7).setDepth(30);
-        this.tweens.add({
-            targets: ring, radius: 300, alpha: 0, duration: 600,
-            onComplete: () => ring.destroy(),
-        });
-        // Damage all enemies in radius
-        this._enemies.forEach(e => {
-            if (!e.isAlive) return;
-            const d = Phaser.Math.Distance.Between(x, y, e.x, e.y);
-            if (d < 300) e.takeDamage(this.player.attackDmg * 2.5);
-        });
-    }
+// Then simplify both callers:
+_checkMeleeHit(hx, hy)      { this._damageEnemiesInRadius(hx, hy, 90); }
+_triggerUltimate(x, y)      { this._damageEnemiesInRadius(x, y, 300, 2.5); }
 
     // ─────────────────────────────────────────────────────────────────────────
     //  POST-FIGHT SEQUENCE
@@ -384,7 +360,7 @@ export default class VillageScene extends Phaser.Scene {
             this.scene.start(SCENES.FOREST, {
                 playerType: this.playerType,
                 shards: this.shards,
-                savedVillagers: false,
+                savedVillagers: this.savedVillagers,
             });
         });
     }
@@ -403,6 +379,6 @@ export default class VillageScene extends Phaser.Scene {
         if (this.player && this.player.isAlive) {
             this.player.update();
         }
-        this._enemies.forEach(e => { if (e.active) e.update(); });
+        this._enemies.forEach(e => e.update());
     }
 }

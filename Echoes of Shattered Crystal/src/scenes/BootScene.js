@@ -33,7 +33,6 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('graveyard_bg', 'assets/images/backgrounds/graveyard_bg.png');
         this.load.image('volcanoe_bg',  'assets/images/backgrounds/volcanoe_bg.png');
 
-        this.load.image('volcanoe_bg',   'assets/images/backgrounds/volcanoe_bg.png');
  
         this.load.image('mountain_bg',  'assets/images/backgrounds/mountain_bg.png');
         this.load.image('menu_bg',      'assets/images/backgrounds/menu_bg.png');
