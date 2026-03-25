@@ -10,7 +10,8 @@ Overview
 
 Echoes of the Shattered Crystal is set in a peaceful village where a sacred crystal resides at the heart of the community. When the crystal unexpectedly shatters into five shards, it unleashes a dark curse, summoning monsters that threaten the land. Players assume the role of a chosen hunter—either Aria, the swift archer, or Orion, the formidable swordsman—to retrieve the shards and restore balance.
 The game combines story-rich exploration with dynamic combat mechanics, allowing players to unlock new abilities as they progress through diverse environments—from cursed forests to fiery volcanoes and treacherous mountain peaks. The narrative culminates in a pivotal choice that determines the future of the land: sacrifice the crystal’s power for peace or harness its strength to become its ruler.
-Key Features
+
+Key Features:
 
 
 
@@ -33,7 +34,7 @@ The Final Mountain: Confront the dragon, utilize all abilities, and make the ult
 
 Gameplay Mechanics:  
 
-Storyline adventure following different chapters, each with unique scenarios 
+Storyline based adventure following different chapters, each with unique scenarios. 
 Progressive unlocking of abilities: shield, dash, and ultimate attacks.  
 Strategic combat tailored to character style and environment.
 
